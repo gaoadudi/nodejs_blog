@@ -7,13 +7,16 @@ $ npm run watch => Auto render scss to css
 + .gitignore: Các file/folder sẽ không push lên remote repo
 + package.json: Cấu hình hệ thống
 + nodemon.json: Các kiểu file mà nodemon sẽ lắng nghe thay đổi
-+ index.js: File chính (route, ...)
 + src:
-1. public: css, tài nguyên (img, ...)
-2. resources: Tập hợp các file code
+1. index.js: File chính (route, ...)
+2. public: css, tài nguyên (img, ...)
+3. resources: Tập hợp các file code
 > handlebars: Template
 views/layouts/main.hbs => main là template luôn được gọi, các thành phần khác sẽ được render thêm vào
 views/partials => Chứa các thành phần phụ sẽ được render vào main
 > sass (scss): 1 cách khác để viết css (gọn và dễ quản lý hơn)
 scss/app.scss => Sẽ tự render sang file app.css
 scss/_variables.scss => Chứa các biến giá trị có thể dùng nhiều lần trong css
+> routes
+> app: MVC
+controller
