@@ -15,9 +15,9 @@ function route(app) {
         res.send('');
     });
 
-    // Route: (path, handler)
+    // Route: Route get path (in url) and call the handler function 
     app.use('/news', newsRouter);
-    app.use('/', siteRouter);
+    app.use('/', siteRouter); // (path, handler)
 }
 
 module.exports = route;
