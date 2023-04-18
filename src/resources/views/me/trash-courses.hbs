@@ -1,0 +1,93 @@
+<div class="mt-4 mb-4">
+    <h3>Khóa học đã xóa</h3>
+    <a href="/me/stored/courses" class="btn btn-link">Danh sách khóa học</a>
+    <table class="table table-hover mt-3">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Tên khóa học</th>
+                <th>Trình độ người học</th>
+                <th>Thời gian xóa</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each courses}}
+            <tr>
+                <td>{{sum @index 1}}</td> {{!-- index + 1 --}}
+                <td>{{this._doc.name}}</td>
+                <td>{{this._doc.level}}</td>
+                <td>{{this._doc.deletedAt}}</td>
+                <td>
+                    <a href="" class="btn btn-link btn-restore" data-id="{{this._doc._id}}">Khôi phục</a>
+                    {{!-- Mở confirm delete dialog và truyền vào _id --}}
+                    <a href="" class="btn btn-link" data-id="{{this._doc._id}}" 
+                        data-toggle="modal" data-target="#delete-course-modal">Xóa vĩnh viễn</a>
+                </td>
+            </tr>
+            {{else}} {{!-- Nếu không có dữ liệu --}}
+            <tr colspan="5" class="text-center">
+                Thùng rác trống.
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+{{!-- Confirm delete dialog --}}
+<div class="modal fade" id="delete-course-modal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xóa vĩnh viễn khóa học</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Hành động này không thể khôi phục! Bạn chắc chắn muốn xóa vĩnh viễn khóa học này?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btn-delete-course">Xóa bỏ</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- Delete hidden form --}}
+<form method="POST" name="delete-course-form"></form>
+{{!-- Restore hidden form --}}
+<form method="POST" name="restore-course-form"></form>
+
+{{!-- Nhấn nút 'Khôi phục' => Submit form ẩn bằng action PATCH --}}
+{{!-- Nhấn nút 'Xóa vĩnh viễn' => Mở dialog => Nhấn 'Xóa bỏ' => Submit form ẩn bằng action DELETE --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () { // Wait content load
+        var courseId;
+        var deleteButton = document.getElementById('btn-delete-course');
+        var deleteForm = document.forms['delete-course-form'];
+        var restoreButton = $('.btn-restore');
+        var restoreForm = document.forms['restore-course-form'];
+
+        // Khi confirm dialog mở ra
+        $('#delete-course-modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            courseId = button.data('id'); // Lấy _id của course được chọn để xóa
+        })
+        // Khi button 'Xóa bỏ' của dialog được nhấn
+        deleteButton.onclick = function () {
+            deleteForm.action = '/course/' + courseId + '/force?_method=DELETE'; // Thêm attribute 'action' cho form
+            deleteForm.submit(); // Submit form => '/course/{{_id}}/force?_method=DELETE'
+        }
+
+        // Khi button 'Khôi phục' được nhấn
+        restoreButton.click(function (event) {
+            event.preventDefault();
+            let courseId = $(this).data('id'); // Lấy _id của course được chọn để khôi phục
+
+            restoreForm.action = '/course/' + courseId + '/restore?_method=PATCH'; // Thêm attribute 'action' cho form
+            restoreForm.submit(); // Submit form => '/course/{{_id}}/restore?_method=PATCH'
+        });
+    });
+</script>

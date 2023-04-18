@@ -1,0 +1,84 @@
+<div class="mt-4 mb-4">
+    <h3>Khóa học của tôi</h3>
+    {{#if deletedCount}}
+    <a href="/me/trash/courses" class="btn btn-link">Thùng rác ({{deletedCount}})</a>
+    {{/if}}
+    <table class="table table-hover mt-3">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Tên khóa học</th>
+                <th>Trình độ người học</th>
+                <th>Thời gian tạo</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each courses}}
+            <tr>
+                <td>{{sum @index 1}}</td> {{!-- index + 1 --}}
+                <td>{{this._doc.name}}</td>
+                <td>{{this._doc.level}}</td>
+                <td>{{this._doc.createdAt}}</td>
+                <td>
+                    <a href="/course/{{this._doc._id}}/edit" class="btn btn-link">Sửa</a>
+                    {{!-- Mở confirm delete dialog và truyền vào _id --}}
+                    <a href="" class="btn btn-link" data-id="{{this._doc._id}}" 
+                        data-toggle="modal" data-target="#delete-course-modal">Xóa</a>
+                </td>
+            </tr>
+            {{else}} {{!-- Nếu không có dữ liệu --}}
+            <tr colspan="5" class="text-center">
+                Bạn chưa đăng khóa học nào. 
+                Đăng khóa học <a href="/course/create">tại đây</a>.
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>
+
+{{!-- Confirm delete dialog --}}
+<div class="modal fade" id="delete-course-modal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Xóa khóa học</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Bạn chắc chắn muốn xóa khóa học này?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btn-delete-course">Xóa bỏ</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{!-- Delete hidden form --}}
+<form method="POST" name="delete-course-form"></form>
+
+{{!-- Xử lý xóa khóa học: Nhấn nút 'Xóa' => Mở dialog => Nhấn 'Xóa bỏ' => Submit form ẩn bằng action DELETE --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () { // Wait content load
+        var courseId;
+        var deleteButton = document.getElementById('btn-delete-course');
+        var deleteForm = document.forms['delete-course-form'];
+
+        // Khi confirm dialog mở ra
+        $('#delete-course-modal').on('show.bs.modal', function (event) {
+            var button = $(event.relatedTarget);
+            courseId = button.data('id'); // Lấy _id của course được chọn để xóa
+        })
+        
+        // Khi button 'Xóa bỏ' của dialog được nhấn
+        deleteButton.onclick = function () {
+            console.log(courseId);
+            deleteForm.action = '/course/' + courseId + '?_method=DELETE'; // Thêm attribute 'action' cho form
+            deleteForm.submit(); // Submit form => '/course/{{_id}}?_method=DELETE'
+        }
+    });
+</script>
