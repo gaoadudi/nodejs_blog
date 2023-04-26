@@ -17,6 +17,33 @@ function route(app) {
         res.send('');
     });
 
+    // Middleware
+    app.get('/middleware', 
+        // Middleware => localhost:3000/middleware?tiket=vip
+        (req, res, next) => {
+            if (['vip', 'vippro'].includes(req.query.ticket)) { // Kiểm tra ticket (trong url request)
+                req.permission = 'OK';
+                return next(); // Hợp lệ => Hàm xử lý (response) phía dưới
+            } else {
+                res.status(403).json({ message: 'Access denied!' }); // Không hợp lệ => Cảnh báo
+            }
+        },
+        (req, res, next) => { // Hàm xử lý sau khi kiểm tra
+            res.json({ message: 'Successfully!', permission: req.permission });
+        }
+    );
+
+    // Middleware function
+    function validation (req, res, next) {
+        if (['vip', 'vippro'].includes(req.query.ticket)) { // Kiểm tra ticket (trong url request)
+            return next(); // Hợp lệ => Hàm xử lý response
+        } else {
+            res.status(403).json({ message: 'Access denied!' }); // Không hợp lệ => Cảnh báo
+        }
+    }
+    // Áp dụng middleware function cho toàn bộ request trong các route phía dưới
+    //app.use(validation);
+    
     // Route modules
     app.use('/news', newsRouter);
     app.use('/course', courseRouter);

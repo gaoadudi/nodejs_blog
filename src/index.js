@@ -5,9 +5,10 @@ const methodOverride = require('method-override');
 const morgan = require('morgan');
 const { engine } = require('express-handlebars');
 
-// App's libraries
+// Custom libraries
 const route = require('./routes');
 const db = require('./config/db');
+const sortMiddleware = require('./app/middlewares/SortMiddleware');
 
 // Init app
 const app = express();
@@ -30,9 +31,7 @@ app.use(morgan('combined'));
 // Template engine
 app.engine('hbs', engine({
     extname: '.hbs', // Định dạng đuôi file view
-    helpers: { // Hàm hỗ trợ cho việc hiển thị view
-        sum: (a, b) => a + b, 
-    },
+    helpers: require('./helpers/handlebars') // Hàm hỗ trợ cho việc hiển thị view
 }));
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'resources', 'views')); // path: 'resources/views'
@@ -40,6 +39,9 @@ app.set('views', path.join(__dirname, 'resources', 'views')); // path: 'resource
 // -----------------MVC-----------------
 // Connect to Database
 db.connect();
+
+// Custom Middleware: Áp dụng middleware function cho toàn bộ request trong route
+app.use(sortMiddleware); // Sắp xếp
 
 // Init routes
 route(app);

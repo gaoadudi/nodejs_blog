@@ -1,27 +1,58 @@
-<div class="mt-4 mb-4">
+{{!-- Form truy cập /course/handle-form => Gửi đi action và danh sách courseIds[] (áp dụng action cho courseIds[]) --}}
+<form method="POST" name="container-form" action="/course/handle-form" class="mt-4 mb-4">
     <h3>Khóa học của tôi</h3>
     {{#if deletedCount}}
     <a href="/me/trash/courses" class="btn btn-link">Thùng rác ({{deletedCount}})</a>
     {{/if}}
+
+    <div class="mt-4 d-flex align-items-center">
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="checkbox-all">
+            <label class="form-check-label" for="checkbox-all">
+                Chọn tất cả
+            </label>
+        </div>
+        <select class="custom-select custom-select-sm checkbox-select-all-options" name="action" required>
+            <option value="">-- Chọn hành động --</option>
+            <option value="delete">Xóa</option>
+        </select>
+        <button class="btn btn-primary btn-sm container-btn" disabled>Thực hiện</button>
+    </div>
+
     <table class="table table-hover mt-3">
         <thead>
             <tr>
-                <th>#</th>
-                <th>Tên khóa học</th>
-                <th>Trình độ người học</th>
-                <th>Thời gian tạo</th>
+                <th colspan="2">#</th>
+                <th>
+                    Tên khóa học
+                    {{{sortable 'name' _sort}}} {{!-- Sắp xếp theo 'name' --}}
+                </th>
+                <th>
+                    Trình độ
+                    {{{sortable 'level' _sort}}}
+                </th>
+                <th>
+                    Thời gian tạo
+                    {{{sortable 'createdAt' _sort}}}
+                </th>
                 <th>Thao tác</th>
             </tr>
         </thead>
         <tbody>
             {{#each courses}}
             <tr>
+                <td>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="courseIds[]" value="{{this._doc._id}}">
+                    </div>
+                </td>
                 <td>{{sum @index 1}}</td> {{!-- index + 1 --}}
                 <td>{{this._doc.name}}</td>
                 <td>{{this._doc.level}}</td>
                 <td>{{this._doc.createdAt}}</td>
                 <td>
                     <a href="/course/{{this._doc._id}}/edit" class="btn btn-link">Sửa</a>
+                    
                     {{!-- Mở confirm delete dialog và truyền vào _id --}}
                     <a href="" class="btn btn-link" data-id="{{this._doc._id}}" 
                         data-toggle="modal" data-target="#delete-course-modal">Xóa</a>
@@ -35,7 +66,7 @@
             {{/each}}
         </tbody>
     </table>
-</div>
+</form>
 
 {{!-- Confirm delete dialog --}}
 <div class="modal fade" id="delete-course-modal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
@@ -51,7 +82,7 @@
                 Bạn chắc chắn muốn xóa khóa học này?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="btn-delete-course">Xóa bỏ</button>
+                <button type="button" class="btn btn-danger" id="delete-course-btn">Xóa bỏ</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
             </div>
         </div>
@@ -62,13 +93,19 @@
 <form method="POST" name="delete-course-form"></form>
 
 {{!-- Xử lý xóa khóa học: Nhấn nút 'Xóa' => Mở dialog => Nhấn 'Xóa bỏ' => Submit form ẩn bằng action DELETE --}}
+{{!-- Xử lý 'container-form': Nhấn nút 'container-btn' => Submit form => Thực hiện action --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function () { // Wait content load
+    document.addEventListener('DOMContentLoaded', function () { // Đợi load nội dung trang
         var courseId;
-        var deleteButton = document.getElementById('btn-delete-course');
-        var deleteForm = document.forms['delete-course-form'];
+        var deleteButton = document.getElementById('delete-course-btn'); // Button 'Xóa'
+        var deleteForm = document.forms['delete-course-form']; // Form submit 'Xóa'
+        
+        var checkboxAll = $('#checkbox-all'); // Checkbox chọn tất cả
+        var checkboxItem = $('input[name="courseIds[]"]'); // Các checkbox có name = 'courseIds[]'
+        var containerButton = $('.container-btn'); // Nút submit form 'container-form'
+        var containerForm = $('form[name="container-form"]'); // Form có name = 'container-form'
 
-        // Khi confirm dialog mở ra
+        // Khi confirm dialog mở ra (do nhấn button 'xóa')
         $('#delete-course-modal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
             courseId = button.data('id'); // Lấy _id của course được chọn để xóa
@@ -79,6 +116,32 @@
             console.log(courseId);
             deleteForm.action = '/course/' + courseId + '?_method=DELETE'; // Thêm attribute 'action' cho form
             deleteForm.submit(); // Submit form => '/course/{{_id}}?_method=DELETE'
+        }
+
+        // Khi checkbox-all được chọn => Các checkbox-item được chọn cùng lúc 
+        checkboxAll.change(function () {
+            let isCheckedAll = $(this).prop('checked');
+            checkboxItem.prop('checked', isCheckedAll);
+
+            renderContainerButton();
+        });
+
+        // Khi checkbox-item được chọn => Checkbox-all thay đổi theo
+        checkboxItem.change(function () {
+            let isCheckedAll = checkboxItem.length === $('input[name="courseIds[]"]:checked').length;
+            checkboxAll.prop('checked', isCheckedAll);
+
+            renderContainerButton();
+        });
+
+        // Bật/tắt button 'container-btn' 
+        function renderContainerButton() {
+            let checkedCount = $('input[name="courseIds[]"]:checked').length;
+            if (checkedCount > 0) { // Nếu có ít nhất 1 checkbox-item được chọn
+                containerButton.attr('disabled', false); // Xóa attribute 'disabled' cho button => Bật button
+            } else {
+                containerButton.attr('disabled', true); // Thêm attribute 'disabled' cho button => Tắt button
+            }
         }
     });
 </script>

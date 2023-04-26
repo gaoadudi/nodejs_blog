@@ -55,6 +55,19 @@ class CourseController {
             .then(() => res.redirect('back')) // Chuyển hướng về url trước đó '/me/stored/courses'
             .catch(next);
     }
+
+    // [POST] /course/handle-form-action
+    handleForm(req, res, next) {
+        switch(req.body.action) {
+            case 'delete': 
+                Course.delete({ _id: { $in: req.body.courseIds } }) // Xóa mềm document theo điều kiện 'id'
+                    .then(() => res.redirect('back')) // Chuyển hướng về url trước đó '/me/stored/courses'
+                    .catch(next);
+                break;
+            default:
+                req.json({ message: 'Action is invalid!' });
+        }
+    }
 }
 
 module.exports = new CourseController;

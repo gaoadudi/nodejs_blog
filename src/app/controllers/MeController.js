@@ -3,12 +3,15 @@ const Course = require('../models/Course');
 class MeController {
     // [GET] /me/stored/courses
     storedCourses(req, res, next) {
-        // Lấy tất cả document chưa xóa & số lượng document đã xóa trong collection
-        Promise.all([Course.find({}), Course.countDocumentsDeleted({})])
+        //res.json(res.locals._sort);
+
+        // Lấy tất cả document chưa xóa (Sắp xếp lại nếu cần) & số lượng document đã xóa trong collection
+        Promise.all([Course.find({}).sortable(req), Course.countDocumentsDeleted({})])
             .then(([courses, deletedCount]) => res.render('me/stored-courses', { 
                 courses, deletedCount 
             })) // Render view 'stored-courses'
             .catch(next);
+
         /*
         Course.countDocumentsDeleted({}) // Lấy số lượng document đã xóa trong collection
             .then(deletedCount => res.render('me/stored-courses', { deletedCount })) // Render view 'stored-courses'
