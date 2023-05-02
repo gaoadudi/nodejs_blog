@@ -1,0 +1,22 @@
+<div class="mt-4 mb-4">
+    <h2>Tạo bài viết mới</h2>
+    <form method="POST" action="/blog/store">
+        <div class="form-group">
+            <label for="title">Tiêu đề:</label>
+            <input type="text" class="form-control" id="title" name="title" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Mô tả:</label>
+            <textarea class="form-control" id="description" name="description"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="content">Nội dung:</label>
+            <textarea class="form-control" rows="7" id="content" name="content"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="slug">Tham số slug:</label>
+            <input type="text" class="form-control" id="slug" name="slug" disabled>
+        </div>
+        <button type="submit" class="btn btn-primary">Thêm bài viết</button>
+    </form>
+</div>

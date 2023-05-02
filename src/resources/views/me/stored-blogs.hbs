@@ -1,8 +1,8 @@
-{{!-- Form truy cập /course/handle-form => Gửi đi action và danh sách courseIds[] (áp dụng action cho courseIds[]) --}}
-<form method="POST" name="container-form" action="/course/handle-form" class="mt-4 mb-4">
-    <h3>Khóa học của tôi</h3>
+{{!-- Form truy cập /blog/handle-form => Gửi đi action và danh sách blogIds[] (áp dụng action cho blogIds[]) --}}
+<form method="POST" name="container-form" action="/blog/handle-form" class="mt-4 mb-4">
+    <h3>Bài viết của tôi</h3>
     {{#if deletedCount}}
-    <a href="/me/trash/courses" class="btn btn-link">Thùng rác ({{deletedCount}})</a>
+    <a href="/me/trash/blogs" class="btn btn-link">Thùng rác ({{deletedCount}})</a>
     {{/if}}
 
     <div class="mt-4 d-flex align-items-center">
@@ -24,12 +24,11 @@
             <tr>
                 <th colspan="2">#</th>
                 <th>
-                    Tên khóa học
-                    {{{sortable 'name' _sort}}} {{!-- Sắp xếp theo 'name' --}}
+                    Tiêu đề
+                    {{{sortable 'title' _sort}}} {{!-- Sắp xếp theo 'name' --}}
                 </th>
                 <th>
-                    Trình độ
-                    {{{sortable 'level' _sort}}}
+                    Mô tả
                 </th>
                 <th>
                     Thời gian tạo
@@ -39,31 +38,31 @@
             </tr>
         </thead>
         <tbody>
-            {{#if courses.length}}
-            {{#each courses}}
+            {{#if blogs.length}}
+            {{#each blogs}}
             <tr>
                 <td>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="courseIds[]" value="{{this._doc._id}}">
+                        <input class="form-check-input" type="checkbox" name="blogIds[]" value="{{this._doc._id}}">
                     </div>
                 </td>
                 <td>{{sum @index 1}}</td> {{!-- index + 1 --}}
-                <td>{{this._doc.name}}</td>
-                <td>{{this._doc.level}}</td>
+                <td>{{this._doc.title}}</td>
+                <td>{{this._doc.description}}</td>
                 <td>{{this._doc.createdAt}}</td>
                 <td>
-                    <a href="/course/{{this._doc._id}}/edit" class="btn btn-link">Sửa</a>
+                    <a href="/blog/{{this._doc._id}}/edit" class="btn btn-link">Sửa</a>
                     
                     {{!-- Mở confirm delete dialog và truyền vào _id --}}
                     <a href="" class="btn btn-link" data-id="{{this._doc._id}}" 
-                        data-toggle="modal" data-target="#delete-course-modal">Xóa</a>
+                        data-toggle="modal" data-target="#delete-blog-modal">Xóa</a>
                 </td>
             </tr>
             {{/each}}
             {{else}} {{!-- Nếu không có dữ liệu --}}
-            <tr colspan="5" class="text-center">
-                Bạn chưa đăng khóa học nào. 
-                Đăng khóa học <a href="/course/create">tại đây</a>.
+            <tr colspan="6" class="text-center">
+                Bạn chưa đăng bài viết nào. 
+                Đăng bài viết <a href="/blog/create">tại đây</a>.
             </tr>
             {{/if}}
         </tbody>
@@ -71,20 +70,20 @@
 </form>
 
 {{!-- Confirm delete dialog --}}
-<div class="modal fade" id="delete-course-modal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<div class="modal fade" id="delete-blog-modal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Xóa khóa học</h5>
+                <h5 class="modal-title" id="deleteModalLabel">Xóa bài viết</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                Bạn chắc chắn muốn xóa khóa học này?
+                Bạn chắc chắn muốn xóa bài viết này?
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="delete-course-btn">Xóa bỏ</button>
+                <button type="button" class="btn btn-danger" id="delete-blog-btn">Xóa bỏ</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
             </div>
         </div>
@@ -92,33 +91,33 @@
 </div>
 
 {{!-- Delete hidden form --}}
-<form method="POST" name="delete-course-form"></form>
+<form method="POST" name="delete-blog-form"></form>
 
-{{!-- Xử lý xóa khóa học: Nhấn nút 'Xóa' => Mở dialog => Nhấn 'Xóa bỏ' => Submit form ẩn bằng action DELETE --}}
+{{!-- Xử lý xóa bài viết: Nhấn nút 'Xóa' => Mở dialog => Nhấn 'Xóa bỏ' => Submit form ẩn bằng action DELETE --}}
 {{!-- Xử lý 'container-form' (checkbox-all): Nhấn nút 'container-btn' => Submit form => Thực hiện action --}}
 <script>
     document.addEventListener('DOMContentLoaded', function () { // Đợi load nội dung trang
-        var courseId;
-        var deleteButton = document.getElementById('delete-course-btn'); // Button 'Xóa'
-        var deleteForm = document.forms['delete-course-form']; // Form submit 'Xóa'
+        var blogId;
+        var deleteButton = document.getElementById('delete-blog-btn'); // Button 'Xóa'
+        var deleteForm = document.forms['delete-blog-form']; // Form submit 'Xóa'
         
         var checkboxAll = $('#checkbox-all'); // Checkbox chọn tất cả
-        var checkboxItem = $('input[name="courseIds[]"]'); // Các checkbox có name = 'courseIds[]'
+        var checkboxItem = $('input[name="blogIds[]"]'); // Các checkbox có name = 'blogIds[]'
         var containerButton = $('.container-btn'); // Button submit form 'container-form'
         var containerForm = $('form[name="container-form"]'); // Form có name = 'container-form'
 
         // XÓA
         // Khi confirm dialog mở ra (do nhấn button 'xóa')
-        $('#delete-course-modal').on('show.bs.modal', function (event) {
+        $('#delete-blog-modal').on('show.bs.modal', function (event) {
             var button = $(event.relatedTarget);
-            courseId = button.data('id'); // Lấy _id của course được chọn để xóa
+            blogId = button.data('id'); // Lấy _id của blog được chọn để xóa
         })
         
         // Khi button 'Xóa bỏ' của dialog được nhấn
         deleteButton.onclick = function () {
-            console.log(courseId);
-            deleteForm.action = '/course/' + courseId + '?_method=DELETE'; // Thêm attribute 'action' cho form
-            deleteForm.submit(); // Submit form => '/course/{{_id}}?_method=DELETE'
+            console.log(blogId);
+            deleteForm.action = '/blog/' + blogId + '?_method=DELETE'; // Thêm attribute 'action' cho form
+            deleteForm.submit(); // Submit form => '/blog/{{_id}}?_method=DELETE'
         }
 
         // CHECKBOX ALL
@@ -132,7 +131,7 @@
 
         // Khi checkbox-item được chọn => Checkbox-all thay đổi theo
         checkboxItem.change(function () {
-            let isCheckedAll = checkboxItem.length === $('input[name="courseIds[]"]:checked').length;
+            let isCheckedAll = checkboxItem.length === $('input[name="blogIds[]"]:checked').length;
             checkboxAll.prop('checked', isCheckedAll);
 
             renderContainerButton();
@@ -140,7 +139,7 @@
 
         // Bật/tắt button 'container-btn' 
         function renderContainerButton() {
-            let checkedCount = $('input[name="courseIds[]"]:checked').length;
+            let checkedCount = $('input[name="blogIds[]"]:checked').length;
             if (checkedCount > 0) { // Nếu có ít nhất 1 checkbox-item được chọn
                 containerButton.attr('disabled', false); // Xóa attribute 'disabled' cho button => Bật button
             } else {

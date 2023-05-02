@@ -1,13 +1,17 @@
 <div class="mt-4 mb-4">
     <div class="row">
-        <div class="col-lg-3 mt-3">
-            <button type="button" class="btn btn-primary mb-3">Học ngay</button>
+        <div class="col-lg-3 mb-3">
+            <div class="mb-3">
+                <button type="button" class="btn btn-primary">Học ngay</button>
+                <a class="btn btn-secondary" href="/">Quay lại</a>
+            </div>
             <ul class="list-group">
+                <li class="list-group-item">Tác giả: </li>
                 <li class="list-group-item">{{course._doc.level}}</li>
                 <li class="list-group-item">Truy cập mọi lúc, mọi nơi</li>
             </ul>
         </div>
-        <div class="col-lg-9 mt-3">
+        <div class="col-lg-9 mb-3">
             <h2>{{course._doc.name}}</h2>
             <iframe width="100%" height="350" src="https://www.youtube.com/embed/{{course._doc.videoId}}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
             <p>{{course._doc.description}}</p>

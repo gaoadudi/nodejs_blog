@@ -5,22 +5,20 @@ const mongooseDelete = require('mongoose-delete');
 
 const Schema = mongoose.Schema;
 
-// Define course schema => Tự động ánh xạ tới collection 'courses' trong MongoDB
-const CourseSchema = new Schema({
+// Define blog schema => Tự động ánh xạ tới collection 'blogs' trong MongoDB
+const BlogSchema = new Schema({
     //_id: { type: Number },
-    name: { type: String, required: true, maxLength: 250 },
+    title: { type: String, required: true, maxLength: 250 },
     description: { type: String, maxLength: 500 },
-    image: { type: String, maxLength: 250 },
-    videoId: { type: String, maxLength: 250 },
-    level: { type: String, maxLength: 250 },
-    slug: { type: String, slug: "name", unique: true }, // Thêm slug cho document dựa theo field 'name'
+    content: { type: String },
+    slug: { type: String, slug: "title", unique: true }, // Thêm slug cho document dựa theo field 'title'
 }, {
     //_id: false, // Mongoose sẽ không tác động tới field '_id'
     timestamps: true, // createdAt, updatedAt (Thêm timestamps cho document)
 });
 
 // Custom query helpers
-CourseSchema.query.sortable = function (req) { // Hàm sắp xếp document
+BlogSchema.query.sortable = function (req) { // Hàm sắp xếp document
     if (req.query.hasOwnProperty('_sort')) {  // Nếu request url có '_sort' => Sắp xếp
         const isValidType = ['asc', 'desc'].includes(req.query.type);
         return this.sort({
@@ -32,10 +30,10 @@ CourseSchema.query.sortable = function (req) { // Hàm sắp xếp document
 
 // Add plugin
 mongoose.plugin(slug); // Sử dụng slug (param)
-CourseSchema.plugin(mongooseDelete, {
+BlogSchema.plugin(mongooseDelete, {
     deletedAt: true,
     overrideMethods: 'all',
 }); // Sử dụng soft delete (xóa mềm, có thể khôi phục)
-//CourseSchema.plugin(AutoIncrement); // Sử dụng auto-increment _id
+//BlogSchema.plugin(AutoIncrement); // Sử dụng auto-increment _id
 
-module.exports = mongoose.model('Course', CourseSchema);
+module.exports = mongoose.model('Blog', BlogSchema);

@@ -1,11 +1,17 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container">
-        <a class="navbar-brand" href="/">Education Blog</a>
+        <a class="navbar-brand" href="/">Trang chủ</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/blogs">Bài viết <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+            
             <ul class="navbar-nav ml-auto">
                 <!-- Dropdown -->
                 <li class="nav-item dropdown">
@@ -15,9 +21,10 @@
                     </a>
                     <div class="dropdown-menu">
                         <a class="dropdown-item" href="/course/create">Đăng khóa học</a>
+                        <a class="dropdown-item" href="/blog/create">Đăng bài viết</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/me/stored/courses">Khóa học của tôi</a>
-                        <a class="dropdown-item" href="/me/stored/news">Bài đăng của tôi</a>
+                        <a class="dropdown-item" href="/me/stored/blogs">Bài viết của tôi</a>
                     </div>
                 </li>
             </ul>

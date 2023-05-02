@@ -26,7 +26,7 @@ app.use(express.json()); // Tiếp nhận dữ liệu dạng json
 app.use(express.static(path.join(__dirname, 'public'))); // test => localhost:3000/img/logo.png
 
 // HTTP logger
-app.use(morgan('combined')); 
+//app.use(morgan('combined')); 
 
 // Template engine
 app.engine('hbs', engine({

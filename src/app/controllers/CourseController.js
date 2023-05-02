@@ -1,6 +1,7 @@
 const Course = require('../models/Course');
 
 class CourseController {
+    
     // [GET] /course/:slug (slug => parameter in url)
     show(req, res, next) {
         Course.findOne({ slug: req.params.slug }) // Lấy dữ liệu theo điều kiện 'slug'
@@ -59,9 +60,14 @@ class CourseController {
     // [POST] /course/handle-form-action
     handleForm(req, res, next) {
         switch(req.body.action) {
-            case 'delete': 
+            case 'delete': // action = delete, danh sách _id = courseIds[]
                 Course.delete({ _id: { $in: req.body.courseIds } }) // Xóa mềm document theo điều kiện 'id'
                     .then(() => res.redirect('back')) // Chuyển hướng về url trước đó '/me/stored/courses'
+                    .catch(next);
+                break;
+            case 'restore': // action = restore, danh sách _id = courseIds[]
+                Course.restore({ _id: { $in: req.body.courseIds } }) // Khôi phục document theo điều kiện 'id'
+                    .then(() => res.redirect('back')) // Chuyển hướng về url trước đó '/me/trash/courses'
                     .catch(next);
                 break;
             default:
