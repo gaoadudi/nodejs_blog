@@ -4,11 +4,12 @@ const express = require('express');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const { engine } = require('express-handlebars');
+const session = require('express-session');
+const mongoStore = require('connect-mongo');
 
 // Custom libraries
 const route = require('./routes');
 const db = require('./config/db');
-const sortMiddleware = require('./app/middlewares/SortMiddleware');
 
 // Init app
 const app = express();
@@ -28,7 +29,7 @@ app.use(express.static(path.join(__dirname, 'public'))); // test => localhost:30
 // HTTP logger
 //app.use(morgan('combined')); 
 
-// Template engine
+// Init Template engine (handlebars middleware)
 app.engine('hbs', engine({
     extname: '.hbs', // Định dạng đuôi file view
     helpers: require('./helpers/handlebars') // Hàm hỗ trợ cho việc hiển thị view
@@ -40,8 +41,18 @@ app.set('views', path.join(__dirname, 'resources', 'views')); // path: 'resource
 // Connect to Database
 db.connect();
 
-// Custom Middleware: Áp dụng middleware function cho toàn bộ request trong route
-app.use(sortMiddleware); // Sắp xếp
+// Init session middleware
+app.use(session({
+    secret: 'i love cats',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { 
+        httpOnly: true,
+        secure: false,
+        maxAge: 1000 * 60 * 60 * 24 // Cookie có thời hạn 1 ngày
+    }, 
+    //store: mongoStore.create({mongoUrl: 'mongodb+srv://gaoadudi:MyDatabase@cluster0.92chkca.mongodb.net/blog', ttl: 60 * 60 * 24, // 1 day})
+}));
 
 // Init routes
 route(app);

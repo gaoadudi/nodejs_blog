@@ -17,6 +17,8 @@
             <label for="slug">Tham số slug:</label>
             <input type="text" class="form-control" id="slug" name="slug" value="{{blog._doc.slug}}" disabled>
         </div>
+        <input type="hidden" name="author" value="{{currentUser._id}}"/>
         <button type="submit" class="btn btn-primary">Sửa bài viết</button>
+        <a class="btn btn-secondary" href="/me/stored/blogs">Quay lại</a>
     </form>
 </div>

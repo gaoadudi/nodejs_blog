@@ -12,6 +12,7 @@ const BlogSchema = new Schema({
     description: { type: String, maxLength: 500 },
     content: { type: String },
     slug: { type: String, slug: "title", unique: true }, // Thêm slug cho document dựa theo field 'title'
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Khóa ngoại reference: User._id
 }, {
     //_id: false, // Mongoose sẽ không tác động tới field '_id'
     timestamps: true, // createdAt, updatedAt (Thêm timestamps cho document)

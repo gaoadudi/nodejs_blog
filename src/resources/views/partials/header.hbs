@@ -10,6 +10,11 @@
                 <li class="nav-item active">
                     <a class="nav-link" href="/blogs">Bài viết <span class="sr-only">(current)</span></a>
                 </li>
+                {{#if currentUser}}
+                <li class="nav-item active">
+                    <span class="nav-link text-monospace">Welcome {{currentUser.username}}</span>
+                </li> 
+                {{/if}}
             </ul>
             
             <ul class="navbar-nav ml-auto">
@@ -20,11 +25,21 @@
                         Tùy chọn
                     </a>
                     <div class="dropdown-menu">
+                        {{#if currentUser}}
                         <a class="dropdown-item" href="/course/create">Đăng khóa học</a>
                         <a class="dropdown-item" href="/blog/create">Đăng bài viết</a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="/me/stored/courses">Khóa học của tôi</a>
                         <a class="dropdown-item" href="/me/stored/blogs">Bài viết của tôi</a>
+                        <div class="dropdown-divider"></div>
+                        {{/if}}
+                        <a class="dropdown-item" href="/user/create">Tạo tài khoản</a>
+                        {{#if currentUser}}
+                        <a class="dropdown-item" href="/user/change/password">Đổi mật khẩu</a>
+                        <a class="dropdown-item" href="/user/logout">Đăng xuất</a>
+                        {{else}}
+                        <a class="dropdown-item" href="/user/login">Đăng nhập</a>
+                        {{/if}}
                     </div>
                 </li>
             </ul>

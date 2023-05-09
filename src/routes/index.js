@@ -2,6 +2,10 @@ const siteRouter = require('./site');
 const courseRouter = require('./course');
 const blogRouter = require('./blog');
 const meRouter = require('./me');
+const userRouter = require('./user');
+const sortMiddleware = require('../app/middlewares/SortMiddleware');
+const sessionMiddleware = require('../app/middlewares/SessionMiddleware');
+const loginMiddleware = require('../app/middlewares/LoginMiddleware');
 
 function route(app) {
     // GET method
@@ -43,11 +47,14 @@ function route(app) {
     }
     // Áp dụng middleware function cho toàn bộ request trong các route phía dưới
     //app.use(validation);
+    app.use(sortMiddleware); // Sắp xếp document
+    app.use(sessionMiddleware); // Gửi session (nếu có) tới view
     
     // Route modules
     app.use('/course', courseRouter);
     app.use('/blog', blogRouter);
-    app.use('/me', meRouter);
+    app.use('/me', loginMiddleware, meRouter);
+    app.use('/user', userRouter);
     app.use('/', siteRouter);
 }
 

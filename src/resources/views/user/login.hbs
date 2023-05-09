@@ -1,0 +1,17 @@
+<div class="mt-4 mb-4">
+    <h2 class="text-primary">Đăng nhập</h2>
+    <form method="POST" action="/user/authen">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Đăng nhập</button>
+        {{#if error}}
+            <p class="text-warning">{{ error }}</p>
+        {{/if}}
+    </form>
+</div>

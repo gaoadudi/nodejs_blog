@@ -14,6 +14,7 @@ const CourseSchema = new Schema({
     videoId: { type: String, maxLength: 250 },
     level: { type: String, maxLength: 250 },
     slug: { type: String, slug: "name", unique: true }, // Thêm slug cho document dựa theo field 'name'
+    author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // Khóa ngoại reference: User._id
 }, {
     //_id: false, // Mongoose sẽ không tác động tới field '_id'
     timestamps: true, // createdAt, updatedAt (Thêm timestamps cho document)
