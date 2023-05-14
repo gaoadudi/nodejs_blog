@@ -15,6 +15,52 @@
                     </div>
                 </div>
             {{/each}}
+            <div class="lazy-load"></div>
         </div>
     </div>
 </div>
+
+<script>
+    let page = 2; // Bắt đầu tải từ trang thứ 2
+    let isLoading = false;
+
+    function lazyLoad() {
+        if (isLoading) return;
+        isLoading = true;
+
+        fetch('/lazy-load?page=' + page) // Lấy dữ liệu
+            .then(res => res.json())
+            .then(data => {
+                const lazyLoadDiv = document.querySelector('.lazy-load');
+                data.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.innerHTML = `
+                        <div class="card card-course-item">
+                            <a href="/course/${item.slug}">
+                                <img class="card-img-top" src="${item.image}" alt="${item.name}">
+                            </a>
+                            <div class="card-body">
+                                <a href="/course/${item.slug}">
+                                    <h4 class="card-title">${item.name}</h4>
+                                </a>
+                                <p class="card-text">${item.description}</p>
+                                <a href="#" class="btn btn-primary">Mua khóa học</a>
+                            </div>
+                        </div>
+                    `;
+                    lazyLoadDiv.appendChild(itemDiv);
+                });
+                page++;
+                isLoading = false;
+            });
+    }
+
+    window.addEventListener('scroll', () => {
+        const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+        if (scrollTop + clientHeight >= scrollHeight - 5) {
+            lazyLoad();
+        }
+    });
+
+    lazyLoad(); // Tải trang đầu tiên
+</script>

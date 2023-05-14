@@ -2,8 +2,20 @@ const Handlebars = require('handlebars');
 
 module.exports = { // Hàm hỗ trợ cho việc hiển thị view handlebars
     sum: (a, b) => a + b, // Tính tổng
+    sub: (a, b) => a - b, // Tính hiệu
+
+    // So sánh
+    greater: (a, b) => a > b,
+    equal: (a, b) => a == b,
+    less: (a, b) => a < b,
+
+    // Hiển thị thời gian
+    formatDate: (date) => {
+        return date.toLocaleString();
+    },
     
-    sortable: (field, sort) => { // Sắp xếp
+    // Hiển thị tính năng Sắp xếp
+    sortable: (field, sort) => {
         const sortType = (field === sort.column) ? sort.type : 'default';
 
         const icons = {

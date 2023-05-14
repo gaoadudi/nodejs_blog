@@ -10,14 +10,12 @@ const loginMiddleware = require('../app/middlewares/LoginMiddleware');
 function route(app) {
     // GET method
     app.get('/search', (req, res) => {
-        console.log('> Query (GET method): ');
-        console.log(req.query);
+        console.log('> Query (GET method): ', req.query);
         res.render('search'); // Render file 'main' và append file 'search' vào {{{body}}}
     });
     // POST method
     app.post('/search', (req, res) => {
-        console.log('> Body (POST method): ');
-        console.log(req.body);
+        console.log('> Body (POST method): ', req.body);
         res.send('');
     });
 

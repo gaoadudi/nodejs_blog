@@ -49,7 +49,7 @@
                 <td>{{sum @index 1}}</td> {{!-- index + 1 --}}
                 <td>{{this._doc.title}}</td>
                 <td>{{this._doc.description}}</td>
-                <td>{{this._doc.createdAt}}</td>
+                <td>{{formatDate this._doc.createdAt}}</td>
                 <td>
                     <a href="/blog/{{this._doc._id}}/edit" class="btn btn-link">Sửa</a>
                     
@@ -67,6 +67,30 @@
             {{/if}}
         </tbody>
     </table>
+
+    {{#if blogs.length}}
+    <nav class="mx-auto">
+        <ul class="pagination">
+            {{#if (greater pageCount 1)}} {{!-- Nếu pageCount (tổng số trang) > 1 --}}
+                {{#if (greater current 1)}} {{!-- Nếu current > 1 --}}
+                <li class="page-item"><a class="page-link" href="/me/stored/blogs?page={{sub current 1}}{{hrefSort}}">Trước</a></li>
+                {{/if}}
+
+                {{#each pages}} {{!-- Vòng lặp: 1 ... pages --}}
+                    {{#if (equal this ../current)}} {{!-- Nếu this = current (trang hiện tại) --}}
+                    <li class="page-item active"><a class="page-link" href="#">{{this}}</a></li>
+                    {{else}}
+                    <li class="page-item"><a class="page-link" href="/me/stored/blogs?page={{this}}{{../hrefSort}}">{{this}}</a></li>
+                    {{/if}}
+                {{/each}}
+
+                {{#if (less current pageCount)}} {{!-- Nếu current < pageCount --}}
+                <li class="page-item"><a class="page-link" href="/me/stored/blogs?page={{sum current 1}}{{hrefSort}}">Sau</a></li>
+                {{/if}}
+            {{/if}}
+        </ul>
+    </nav>
+    {{/if}}
 </form>
 
 {{!-- Confirm delete dialog --}}

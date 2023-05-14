@@ -50,9 +50,9 @@
                 <td>{{sum @index 1}}</td> {{!-- index + 1 --}}
                 <td>{{this._doc.name}}</td>
                 <td>{{this._doc.level}}</td>
-                <td>{{this._doc.createdAt}}</td>
+                <td>{{formatDate this._doc.createdAt}}</td>
                 <td>
-                    <a href="/course/{{this._doc._id}}/edit" class="btn btn-link">Sửa</a>
+                    <a href="/course/{{this._doc._id}}/edit" class="btn btn-link">Sửa{{hrefSort}}</a>
                     
                     {{!-- Mở confirm delete dialog và truyền vào _id --}}
                     <a href="" class="btn btn-link" data-id="{{this._doc._id}}" 
@@ -68,6 +68,30 @@
             {{/if}}
         </tbody>
     </table>
+    
+    {{#if courses.length}}
+    <nav class="mx-auto">
+        <ul class="pagination">
+            {{#if (greater pageCount 1)}} {{!-- Nếu pageCount (tổng số trang) > 1 --}}
+                {{#if (greater current 1)}} {{!-- Nếu current > 1 --}}
+                <li class="page-item"><a class="page-link" href="?page={{sub current 1}}{{hrefSort}}">Trước</a></li>
+                {{/if}}
+
+                {{#each pages}} {{!-- Vòng lặp: 1 ... pages --}}
+                    {{#if (equal this ../current)}} {{!-- Nếu this = current (trang hiện tại) --}}
+                    <li class="page-item active"><a class="page-link" href="#">{{this}}</a></li>
+                    {{else}}
+                    <li class="page-item"><a class="page-link" href="?page={{this}}{{../hrefSort}}">{{this}}</a></li>
+                    {{/if}}
+                {{/each}}
+
+                {{#if (less current pageCount)}} {{!-- Nếu current < pageCount --}}
+                <li class="page-item"><a class="page-link" href="?page={{sum current 1}}{{hrefSort}}">Sau</a></li>
+                {{/if}}
+            {{/if}}
+        </ul>
+    </nav>
+    {{/if}}
 </form>
 
 {{!-- Confirm delete dialog --}}
