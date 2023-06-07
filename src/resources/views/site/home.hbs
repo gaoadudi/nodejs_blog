@@ -1,5 +1,5 @@
 <div class="mt-4 mb-4">
-    <div class="row">
+    <div class="row lazy-load">
         <div class="card-columns">
             {{#each courses}}
                 <div class="card card-course-item">
@@ -15,7 +15,6 @@
                     </div>
                 </div>
             {{/each}}
-            <div class="lazy-load"></div>
         </div>
     </div>
 </div>
@@ -62,5 +61,5 @@
         }
     });
 
-    lazyLoad(); // Tải trang đầu tiên
+    //lazyLoad(); // Tải trang đầu tiên
 </script>
