@@ -58,4 +58,5 @@ app.use(session({
 route(app);
 
 const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`> App listening on port ${port}`)); // localhost:3000
+//app.listen(port, () => console.log(`> App listening on port ${port}`)); // localhost:3000
+app.listen(port, '0.0.0.0');
